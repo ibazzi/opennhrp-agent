@@ -1,0 +1,14 @@
+Source: opennhrp-agent
+Section: net
+Priority: optional
+Maintainer: ibazzi <ibazzi@qq.com>
+Build-Depends: debhelper-compat (= 13), libssl-dev, python3 <!nocheck>
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: opennhrp-agent
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, opennhrp, ca-certificates
+Description: OpenNHRP management agent
+ Provides an outbound WebSocket connection to opennhrp-manager for
+ centrally managed OpenNHRP Hub and Spoke nodes.

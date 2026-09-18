@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/opennhrp-agent
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 600 debian/opennhrp-agent/etc/opennhrp-agent/agent.env
+
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-start

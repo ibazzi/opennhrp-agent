@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenNHRP Management Agent
+After=network-online.target opennhrp.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/opennhrp-agent/agent.env
+ExecStart=/usr/sbin/opennhrp-agent
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

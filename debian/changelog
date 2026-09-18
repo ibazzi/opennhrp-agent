@@ -1,0 +1,5 @@
+opennhrp-agent (1.0.0-1) unstable; urgency=medium
+
+  * Package the C management agent with its systemd service and configuration.
+
+ -- ibazzi <ibazzi@qq.com>  Fri, 18 Sep 2026 08:18:11 +0000
