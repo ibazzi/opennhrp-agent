@@ -87,6 +87,19 @@ def run(binary, node_type):
         peers = ''.join(f'Type: dynamic\nProtocol-Address: 10.0.0.{i}\n'
                         f'Registration-Mode: {mode}\n\n'
                         for i, mode in enumerate(('ha', 'legacy', 'invalid'), 1))
+        candidate = dict(member='hub', selected_address='198.51.100.1',
+            srtt_ms=12.5, quality_rtt_ms=20.0, quality_samples=60,
+            quality_failures=1, last_quality_reply_age_ms=150.0,
+            quality_valid=True, loss_pct=100 / 60, loss_score=56.666667,
+            latency_score=27.272727, priority_score=10, score=94)
+        unknown = dict(candidate, quality_rtt_ms=None, quality_samples=0,
+            quality_failures=0, last_quality_reply_age_ms=None,
+            quality_valid=False, loss_pct=100, loss_score=0, latency_score=0, score=0)
+        # Expanded 32-candidate diagnostics must survive socket and WS framing.
+        ha_status = 'Status: ok\n\n' + json.dumps(dict(interface='gre-ha',
+            candidates=[dict(candidate, member='hub-' + str(i),
+                addresses=['198.51.100.1'] * 16) for i in range(31)] + [unknown]))
+        assert len(ha_status) > 16384
         sockets = []
         threads = []
 
@@ -108,6 +121,8 @@ def run(binary, node_type):
                         sampling.set()
                         stop.wait(1.5)
                     reply = cluster if ha else peers
+                    if not ha and request.decode().strip() == 'ha show format json':
+                        reply = ha_status
                     try:
                         conn.sendall(reply.encode())
                     except BrokenPipeError:
@@ -143,6 +158,8 @@ def run(binary, node_type):
                     field = 'spokes' if node_type == 'hub' else 'peers'
                     hb = until(conn, lambda m: m['type'] == 'heartbeat' and field in m['payload'])
                     assert [p.get('registration_mode') for p in hb[field]] == ['ha', 'legacy', None]
+                    response = command(conn, 'opennhrp', text='ha show format json\n')
+                    assert response['success'] and response['raw_text'] == ha_status
                     if node_type == 'hub':
                         assert hb['cluster_status']['state_dir'] == '/custom/ha'
                     assert command(conn, 'cli', ['-c', 'printf token; printf warning >&2'])['raw_text'] == 'token'

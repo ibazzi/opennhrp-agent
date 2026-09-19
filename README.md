@@ -62,3 +62,12 @@ Runtime paths use the same environment variables as the Go agent:
 `TOKEN` is unset.
 
 TLS certificate and hostname verification is always enabled for `wss://`.
+
+### Spoke HA 质量状态
+
+`opennhrp` 目标命令 `ha show format json` 的响应通过 `raw_text` 原样传输，包括
+`quality_rtt_ms`、`quality_samples`、`quality_failures`、
+`last_quality_reply_age_ms`、`quality_valid` 及三项评分；缺失测量保留 JSON `null`。
+Agent 不计算评分或迁移等待状态。`loss_pct` 表示最近 30 秒已完成探测的失败率
+（含超时和无效回复），`srtt_ms` 仍是超时估计，评分使用独立的 `quality_rtt_ms`。
+`make test` 覆盖 32 个候选的大响应和空值透传。
