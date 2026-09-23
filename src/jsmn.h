@@ -33,6 +33,7 @@ typedef struct {
 	int toksuper;
 } jsmn_parser;
 
+#ifdef OPENNHRP_AGENT_JSMN_IMPLEMENTATION
 static void jsmn_init(jsmn_parser *parser)
 {
 	parser->pos = 0;
@@ -224,5 +225,6 @@ static int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
 			return JSMN_ERROR_PART;
 	return (int)parser->toknext;
 }
+#endif
 
 #endif

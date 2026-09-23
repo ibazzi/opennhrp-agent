@@ -8,13 +8,14 @@ CPPFLAGS += -Isrc
 CFLAGS += -std=c11 -Wall -Wextra -Werror
 
 BIN := build/opennhrp-agent
-SRC := src/opennhrp-agent.c
+SRC := src/opennhrp-agent.c src/agent_common.c src/agent_status.c \
+       src/agent_websocket.c src/agent_command.c src/agent_log.c
 
 .PHONY: all clean deb install test
 
 all: $(BIN)
 
-$(BIN): $(SRC) src/jsmn.h
+$(BIN): $(SRC) src/agent_internal.h src/jsmn.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(SRC) $(LDLIBS)
 
