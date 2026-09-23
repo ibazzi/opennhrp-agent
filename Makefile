@@ -26,7 +26,11 @@ install: $(BIN)
 	install -D -m 0755 $(BIN) $(DESTDIR)/usr/sbin/opennhrp-agent
 
 deb:
-	dpkg-buildpackage -b -us -uc
+	rm -rf build/src
+	mkdir -p build/src
+	find . -maxdepth 1 ! -name '.' ! -name 'build' ! -name '.git' -exec cp -a {} build/src/ \;
+	cd build/src && dpkg-buildpackage -b -us -uc
+	rm -rf build/src
 
 clean:
 	rm -f $(BIN)
